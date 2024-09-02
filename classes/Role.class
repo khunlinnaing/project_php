@@ -1,0 +1,23 @@
+<?php
+
+class Roles {
+    private PDO $conn;
+
+    public function __construct(PDO $dbConnection) {
+        $this->conn = $dbConnection;
+    }
+    public function index(){
+        
+        $sql = "SELECT * FROM user_role";
+        $stmt = $this->conn->prepare($sql);
+        try {
+            $stmt->execute();
+            $roles = $stmt->fetchall(PDO::FETCH_ASSOC);
+            return $roles;
+        } catch (PDOException $e) {
+            return ['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()];
+        }
+    }
+}
+?>
+

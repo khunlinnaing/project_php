@@ -1,0 +1,91 @@
+<?php
+
+class User {
+    private PDO $conn;
+
+    public function __construct(PDO $dbConnection) {
+        $this->conn = $dbConnection;
+    }
+    public function index($page, $recordsPerPage) {
+        // Calculate the offset for the query
+        $offset = ($page - 1) * $recordsPerPage;
+        $sqlCount = "SELECT COUNT(*) as total FROM users";
+        $stmtCount = $this->conn->prepare($sqlCount);
+        try {
+            $stmtCount->execute();
+            $totalRecords = $stmtCount->fetch(PDO::FETCH_ASSOC)['total'];
+        } catch (PDOException $e) {
+            return ['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()];
+        }
+
+        // Calculate total pages
+        $totalPages = ceil($totalRecords / $recordsPerPage);
+
+        // Query to get the records for the current page
+        $sql = "SELECT * FROM users LIMIT :limit OFFSET :offset";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':limit', $recordsPerPage, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+        try {
+            $stmt->execute();
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return [
+                'status' => 'success',
+                'data' => $users,
+                'currentPage' => $page,
+                'totalPages' => $totalPages,
+                'recordsPerPage' => $recordsPerPage,
+                'totalRecords' => $totalRecords
+            ];
+        } catch (PDOException $e) {
+            return ['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()];
+        }
+    }
+    public function getuser($request){
+        $sql='SELECT * FROM users WHERE id='.$request['userid'];
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user;
+    }
+    public function updateUser($request) {
+        // Define the SQL query for updating user data
+        $sql = 'UPDATE users SET username = :username, email = :email, role_id = :role_id WHERE id = :userid';
+    
+        // Prepare the statement
+        $stmt = $this->conn->prepare($sql);
+    
+        // Bind parameters to prevent SQL injection
+        $stmt->bindParam(':username', $request['username'], PDO::PARAM_STR);
+        $stmt->bindParam(':email', $request['email'], PDO::PARAM_STR);
+        $stmt->bindParam(':role_id', $request['role'], PDO::PARAM_INT);
+        $stmt->bindParam(':userid', $request['userid'], PDO::PARAM_INT);
+    
+        // Execute the statement
+        $stmt->execute();
+        return $stmt->rowCount(); // Returns the number of rows affected by the update
+    }
+
+    public function deleteUser($request) {
+        // Define the SQL query for deleting a user
+        $sql = 'DELETE FROM users WHERE id = :userid';
+    
+        // Prepare the statement
+        $stmt = $this->conn->prepare($sql);
+    
+        // Bind the user ID parameter to prevent SQL injection
+        $stmt->bindParam(':userid', $request['userid'], PDO::PARAM_INT);
+    
+        // Execute the statement
+        $stmt->execute();
+    
+        // Optionally, return the number of affected rows or a success message
+        return $stmt->rowCount(); // Returns the number of rows affected by the delete
+    }
+    
+    
+
+}
+?>
+

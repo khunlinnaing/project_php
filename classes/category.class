@@ -1,0 +1,85 @@
+<?php
+    class Category{
+        private $conn;
+
+        public function __construct($db) {
+            $this->conn = $db;
+        }
+        public function index($page, $recordsPerPage) {
+            // Calculate the offset for the query
+            $offset = ($page - 1) * $recordsPerPage;
+            $sqlCount = "SELECT COUNT(*) as total FROM category";
+            $stmtCount = $this->conn->prepare($sqlCount);
+            try {
+                $stmtCount->execute();
+                $totalRecords = $stmtCount->fetch(PDO::FETCH_ASSOC)['total'];
+            } catch (PDOException $e) {
+                return ['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()];
+            }
+    
+            // Calculate total pages
+            $totalPages = ceil($totalRecords / $recordsPerPage);
+    
+            // Query to get the records for the current page
+            $sql = "SELECT * FROM category LIMIT :limit OFFSET :offset";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':limit', $recordsPerPage, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    
+            try {
+                $stmt->execute();
+                $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                return [
+                    'status' => 'success',
+                    'data' => $users,
+                    'currentPage' => $page,
+                    'totalPages' => $totalPages,
+                    'recordsPerPage' => $recordsPerPage,
+                    'totalRecords' => $totalRecords
+                ];
+            } catch (PDOException $e) {
+                return ['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()];
+            }
+        }
+
+        public function create($request){
+            $name = $request['categoryname'];
+            $image = $request['image'];
+            $amount = $request['amount'];
+            $sql = "INSERT INTO category(name, image, amount) VALUES (:name, :image, :amount)";
+            try {
+                $stmt = $this->conn->prepare($sql);
+                $result = $stmt->execute(['name' => $name, 'image' => $image, 'amount' => $amount]);
+                if ($result) {
+                    return ['status'=>'success'];
+                } else {
+                    return ['status'=>'failed'];
+                }
+            } catch (PDOException $e) {
+                error_log('Database error: ' . $e->getMessage());
+                return 'error';
+            }
+        }
+        public function checkAccount($request) {
+            $username = trim($request['username']);
+            $sql = "SELECT * FROM users WHERE username = :username";
+            
+            try {
+                $stmt = $this->conn->prepare($sql);
+                // Bind the username parameter
+                $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+                $stmt->execute();
+
+                // Fetch the result
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                return $result;
+            } catch (PDOException $e) {
+                // Log and return a generic error message
+                error_log('Database error: ' . $e->getMessage());
+                return 'error';
+            }
+        }
+
+    }
+?>
