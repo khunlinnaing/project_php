@@ -9,6 +9,7 @@
     $_SESSION['access_token']=$result['token'];
     $_SESSION['role'] = $result['role'];
     $_SESSION['userid'] = $result['id'];
+    $_SESSION['loginuseraccount'] = $result['username'];
     if($result['status']=='error'){
         header("Location: ../../index.php?page=login&&message=".$result['message']);
     }else{

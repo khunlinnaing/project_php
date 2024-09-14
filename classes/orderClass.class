@@ -1,0 +1,95 @@
+<?php
+    class Order{
+        private $conn;
+
+        public function __construct($db) {
+            $this->conn = $db;
+        }
+        public function index() {
+            $sql = "SELECT * FROM cart";
+            $stmt = $this->conn->prepare($sql);
+    
+            try {
+                $stmt->execute();
+                $cart = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                return [
+                    'status' => 'success',
+                    'data' => $cart,
+                ];
+            } catch (PDOException $e) {
+                return ['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()];
+            }
+        }
+        public function GetCartByUserId($request){
+            $user_id = $request['userid'];
+
+            $select = "SELECT * FROM users WHERE id = :user_id";
+            $stmt = $this->conn->prepare($select);
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $user = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if($user[0]['notification'] == 0){
+                return array('status'=>'fail');
+            }else{
+                $select = "SELECT count(*) as totalproduct FROM cart WHERE user_id = :user_id";
+                $stmt = $this->conn->prepare($select);
+                $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+                $stmt->execute();
+                $allcart = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                return array('status'=>'success', 'data'=>$allcart);
+            }
+        }
+
+        public function Create($request){
+            $check=true;
+            $this->conn->beginTransaction();
+            foreach ($request['id'] as $data) {
+                try {
+                    $select = "SELECT * FROM order WHERE user_id = :user_id and id=:id";
+                    $stmt = $this->conn->prepare($select);
+                    $stmt->bindParam(':user_id', $request['user_id'], PDO::PARAM_INT);
+                    $stmt->bindParam(':id', $data, PDO::PARAM_STR);
+                    $stmt->execute();
+                    $cart = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $sql = "INSERT INTO order(user_id, product_id, amount, price) VALUES (:user_id, :product_id, :amount, :price)";
+                    $stmt1 = $this->conn->prepare($sql);
+                    $result = $stmt1->execute(['user_id' => $cart[0]['user_id'], 'product_id' => $cart[0]['product_id'], 'amount' => $cart[0]['amount'], 'price'=> $cart[0]['price']]);
+                    // $check=true;
+                    return $result;
+                }catch (PDOException $e) {
+                    $this->conn->rollBack();
+                    $check=false;                    
+                }
+            }
+            if($check){
+                return array('status'=>1);
+            }else{
+                return array('status'=>0);
+            }
+        }
+        public function increaseProductOrder($request) {
+            $sql = 'UPDATE cart SET amount = :amount WHERE id = :id';
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':amount', $request['amount'], PDO::PARAM_INT);
+            $stmt->bindParam(':id', $request['id'], PDO::PARAM_INT);
+            $stmt->execute();
+            if($stmt->rowCount() > 0){
+                return ['status'=>'success'];
+            }else{
+                return ['status'=>'failed'];
+            }            
+        }
+        public function DeleteCart($request) {
+            $sql = 'DELETE FROM cart WHERE id = :id';
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':id', $request['id'], PDO::PARAM_INT);
+            $stmt->execute();
+            if($stmt->rowCount()){
+                return ['status'=>'success'];
+            }else{
+                return ['status'=>'failed'];
+            }
+        }
+
+    }
+?>

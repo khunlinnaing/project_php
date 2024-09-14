@@ -1,6 +1,7 @@
 <?php
 if(!empty($_SESSION['access_token'])){
-    require_once('./Ajax/userlist_ajax.php');
+    if($_SESSION['role'] == 2){
+        require_once('./Ajax/userlist_ajax.php');
 ?>
 
 <section id="hero" class="hero section dark-background">
@@ -89,6 +90,8 @@ if(!empty($_SESSION['access_token'])){
 
 </section>
 <?php }else{
+    header("Location: ./index.php");
+}}else{
     header("Location: ./index.php?page=login");
 } ?>
 <script>

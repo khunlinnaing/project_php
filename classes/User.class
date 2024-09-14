@@ -50,21 +50,14 @@ class User {
         return $user;
     }
     public function updateUser($request) {
-        // Define the SQL query for updating user data
         $sql = 'UPDATE users SET username = :username, email = :email, role_id = :role_id WHERE id = :userid';
-    
-        // Prepare the statement
         $stmt = $this->conn->prepare($sql);
-    
-        // Bind parameters to prevent SQL injection
         $stmt->bindParam(':username', $request['username'], PDO::PARAM_STR);
         $stmt->bindParam(':email', $request['email'], PDO::PARAM_STR);
         $stmt->bindParam(':role_id', $request['role'], PDO::PARAM_INT);
         $stmt->bindParam(':userid', $request['userid'], PDO::PARAM_INT);
-    
-        // Execute the statement
         $stmt->execute();
-        return $stmt->rowCount(); // Returns the number of rows affected by the update
+        return $stmt->rowCount();
     }
 
     public function deleteUser($request) {
@@ -83,9 +76,15 @@ class User {
         // Optionally, return the number of affected rows or a success message
         return $stmt->rowCount(); // Returns the number of rows affected by the delete
     }
-    
-    
-
+    public function CloseNotification($request){
+        $notic = FALSE;
+        $sql = 'UPDATE users SET notification = :notic WHERE id = :userid';
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':notic', $notic, PDO::PARAM_BOOL);
+        $stmt->bindParam(':userid', $request['userid'], PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount();
+    }
 }
 ?>
 

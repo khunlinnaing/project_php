@@ -28,10 +28,10 @@
     
             try {
                 $stmt->execute();
-                $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 return [
                     'status' => 'success',
-                    'data' => $users,
+                    'data' => $categories,
                     'currentPage' => $page,
                     'totalPages' => $totalPages,
                     'recordsPerPage' => $recordsPerPage,
@@ -40,6 +40,13 @@
             } catch (PDOException $e) {
                 return ['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()];
             }
+        }
+        public function getAllcategory(){
+            $sql = "SELECT * FROM category";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return ['status'=>'success', 'data'=>$categories];
         }
 
         public function create($request){
@@ -57,28 +64,51 @@
                 }
             } catch (PDOException $e) {
                 error_log('Database error: ' . $e->getMessage());
-                return 'error';
+                return ['status'=>'failed'];
             }
         }
-        public function checkAccount($request) {
-            $username = trim($request['username']);
-            $sql = "SELECT * FROM users WHERE username = :username";
+        public function checkCategory($request) {
+            $categoryname = trim($request['categoryname']);
+            $sql = "SELECT * FROM category WHERE name = :categoryname";
             
             try {
                 $stmt = $this->conn->prepare($sql);
-                // Bind the username parameter
-                $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+                $stmt->bindParam(':categoryname', $categoryname, PDO::PARAM_STR);
                 $stmt->execute();
-
-                // Fetch the result
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
                 return $result;
             } catch (PDOException $e) {
-                // Log and return a generic error message
                 error_log('Database error: ' . $e->getMessage());
                 return 'error';
             }
+        }
+        public function updateCategory($request) {
+            $sql = 'UPDATE category SET name = :categoryname, image = :image, amount = :amount WHERE id = :categoryid';
+        
+            // Prepare the statement
+            $stmt = $this->conn->prepare($sql);
+        
+            // Bind parameters to prevent SQL injection
+            $stmt->bindParam(':categoryname', $request['categoryname'], PDO::PARAM_STR);
+            $stmt->bindParam(':image', $request['image'], PDO::PARAM_STR);
+            $stmt->bindParam(':amount', $request['amount'], PDO::PARAM_INT);
+            $stmt->bindParam(':categoryid', $request['categoryid'], PDO::PARAM_INT);
+        
+            // Execute the statement
+            $stmt->execute();
+            if($stmt->rowCount() > 0){
+                return ['status'=>'success'];
+            }else{
+                return ['status'=>'failed'];
+            }
+        }
+        public function deleteCategory($request) {
+            $sql = 'DELETE FROM category WHERE id = :categoryid';
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':categoryid', $request['categoryid'], PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->rowCount();
         }
 
     }

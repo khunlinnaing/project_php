@@ -5,16 +5,24 @@ session_start();
     <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
 
       <a href="index.html" class="logo d-flex align-items-center">
-        <h1 class="sitename">Bootslander</h1>
+        <h1 class="sitename">OnlineSale</h1>
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="#hero" class="active">Home</a></li>
-          <li><a href="#about">About</a></li>
+          <li><a class='pagename' name=''>
+              <form action='' method='POST'>
+                  <input type='hidden' name='page' value=''>
+              </form>Home</a></li>
+          <li><a class='pagename' name=''>
+              <form action='./index.php#about' method='POST'>
+                  <input type='hidden' name='page' value=''>
+              </form>About</a></li>
           <li><a href="#features">Features</a></li>
-          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#gallery">Activity</a></li>
           <li><a href="#team">Team</a></li>
+          <?php if(!empty($_SESSION['access_token'])) {
+            if($_SESSION['role'] == 2){?>
           <li>
             <a class='pagename' name='userlist'>
               <form action='' method='POST'>
@@ -31,6 +39,7 @@ session_start();
               Category
             </a>
           </li>
+          
           <li>
             <a class='pagename' name='product'>
               <form action='' method='POST'>
@@ -39,27 +48,13 @@ session_start();
               Products
             </a>
           </li>
-          <li><a class='pagename' name='price'>
-                  <form action='' method='POST'>
-                      <input type='hidden' name='page' value='price'>
-                  </form>Pricing</a></li>
-          <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
-            </ul>
-          </li>
+          <li>
+              <a href="Admin/index.php">Admin Dashboard</a>
+            </li>
+          <?php }else{ ?>
+            <li><a href="./index.php#usercategory">Category</a></li>
+            <li><a href="./index.php#userproduct">Product</a></li>
+          <?php }} ?>
           <li><a href="#contact">Contact</a></li>
           <?php if(empty($_SESSION['access_token'])) {?>
           <li><a class='pagename' name='login'>
@@ -73,6 +68,16 @@ session_start();
                 <input type='hidden' name='page' value='register'>
             </form>Register</a></li>
             <?php }else{?>
+              
+              <li>
+                <a class='pagename' name='cart'>
+                  <form action='' method='POST'>
+                      <input type='hidden' name='page' value='cart'>
+                  </form>
+                  <i class="fa-solid fa-cart-shopping" style="font-size: 20px;"></i>
+                </a>
+              </li>
+              <li><a><?php echo isset($_SESSION['loginuseraccount']) ? '<i class="fa-solid fa-address-book"></i>'.$_SESSION['loginuseraccount'] : ''; ?></a></li>
               <li>
                 <a class='pagename' name='logout2'>
                   <form action='' method='POST'>

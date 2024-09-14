@@ -37,7 +37,7 @@ class LoginUser {
                 $signature = base64_encode($signature);
 
                 $token = "{$payload}.{$signature}";
-                return ['status' => 'success', 'token' => $token, 'role'=>$user['role_id']];
+                return ['status' => 'success', 'token' => $token, 'id'=>$user['id'],'role'=>$user['role_id'], 'username'=>$user['username']];
             } else {
                 return ['status' => 'error', 'message' => 'Invalid credentials'];
             }

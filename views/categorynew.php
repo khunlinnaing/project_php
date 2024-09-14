@@ -24,14 +24,10 @@
                 </div>
             </div>
         </div>
-
     </div>
 </section>
 <script>
     $(document).ready(function(){
-      $('a.pagename').click(function(){
-        $('.login-form').submit();
-      });
       $('.category_submit').click(function(e){
         e.preventDefault();
         const numberRegex =  /^\d+$/;

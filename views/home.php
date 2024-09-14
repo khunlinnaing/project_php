@@ -1,5 +1,16 @@
+<?php
+    require_once './dbconnection/dbconnection.php';
+    require_once './classes/category.class';
+    require_once './classes/product.class';
+    $db = new Database();
+    $database = $db->getConnection();
+    $category = new Category($database);
+    $products = new Product($database);
+    $categorylist = $category->index(1, 10);
+    $productlists = $products->index(1, 10);
+    
+?>
 <main class="main">
-
     <!-- Hero Section -->
     <section id="hero" class="hero section dark-background">
       <img src="./static/img/hero-bg-2.jpg" alt="" class="hero-bg">
@@ -11,10 +22,10 @@
           </div>
 
           <div class="col-lg-6  d-flex flex-column justify-content-center" data-aos="fade-in">
-            <h1>Build Your Landing Page With <span>Bootslander</span></h1>
-            <p>We are team of talented designers making websites with Bootstrap</p>
+            <h1>Welcome To My Chaw Yadanar<span> Online Sale</span></h1>
+            <p>Our website sale Clothes by using online.</p>
             <div class="d-flex">
-              <a href="#about" class="btn-get-started">Get Started</a>
+              <a href="./index.php?page=register" class="btn-get-started">Get Started</a>
               <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox btn-watch-video d-flex align-items-center"><i class="bi bi-play-circle"></i><span>Watch Video</span></a>
             </div>
           </div>
@@ -192,135 +203,77 @@
 
     </section><!-- /Features Section -->
 
-    <!-- Stats Section -->
-    <section id="stats" class="stats section light-background">
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row gy-4">
-
-          <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
-            <i class="bi bi-emoji-smile"></i>
-            <div class="stats-item">
-              <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
-              <p>Happy Clients</p>
-            </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
-            <i class="bi bi-journal-richtext"></i>
-            <div class="stats-item">
-              <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
-              <p>Projects</p>
-            </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
-            <i class="bi bi-headset"></i>
-            <div class="stats-item">
-              <span data-purecounter-start="0" data-purecounter-end="1463" data-purecounter-duration="1" class="purecounter"></span>
-              <p>Hours Of Support</p>
-            </div>
-          </div><!-- End Stats Item -->
-
-          <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
-            <i class="bi bi-people"></i>
-            <div class="stats-item">
-              <span data-purecounter-start="0" data-purecounter-end="15" data-purecounter-duration="1" class="purecounter"></span>
-              <p>Hard Workers</p>
-            </div>
-          </div><!-- End Stats Item -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Stats Section -->
-
     <!-- Details Section -->
-    <section id="details" class="details section">
+    <section id="usercategory" class="details section">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <h2>Details</h2>
-        <div><span>Check Our</span> <span class="description-title">Details</span></div>
+        <h2>Categories</h2>
+        <div><span>This is our</span> <span class="description-title">Categories List</span></div>
       </div><!-- End Section Title -->
 
       <div class="container">
-
-        <div class="row gy-4 align-items-center features-item">
-          <div class="col-md-5 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="100">
-            <img src="./static/img/details-1.png" class="img-fluid" alt="">
+          <div class="row">
+            <?php 
+              foreach ($categorylist['data'] as $category) {
+                echo '
+                  <div class="col-lg-3 col-md-3 mr-1 mt-3">
+                      <div class="card">
+                        <div class="card-title"><h3 class="text-center">'.$category['name'].'</h3></div>
+                        <div class="card-body">
+                          <img src="'.$category['image'].'" class="w-100">
+                        </div>
+                        <div class="card-footer">
+                          <form method="POST">
+                              <input type="hidden" name="page" value="categoryuser">
+                              <input type="hidden" name="categoryid" value="'.$category['id'].'">
+                              <button type="submit" class="btn btn-primary w-100">Detail</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                ';
+              }
+            ?>
           </div>
-          <div class="col-md-7" data-aos="fade-up" data-aos-delay="100">
-            <h3>Voluptatem dignissimos provident quasi corporis voluptates sit assumenda.</h3>
-            <p class="fst-italic">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-              magna aliqua.
-            </p>
-            <ul>
-              <li><i class="bi bi-check"></i><span> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-              <li><i class="bi bi-check"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-              <li><i class="bi bi-check"></i> <span>Ullam est qui quos consequatur eos accusamus.</span></li>
-            </ul>
-          </div>
-        </div><!-- Features Item -->
-
-        <div class="row gy-4 align-items-center features-item">
-          <div class="col-md-5 order-1 order-md-2 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-            <img src="./static/img/details-2.png" class="img-fluid" alt="">
-          </div>
-          <div class="col-md-7 order-2 order-md-1" data-aos="fade-up" data-aos-delay="200">
-            <h3>Corporis temporibus maiores provident</h3>
-            <p class="fst-italic">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-              magna aliqua.
-            </p>
-            <p>
-              Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-              velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-              culpa qui officia deserunt mollit anim id est laborum
-            </p>
-          </div>
-        </div><!-- Features Item -->
-
-        <div class="row gy-4 align-items-center features-item">
-          <div class="col-md-5 d-flex align-items-center" data-aos="zoom-out">
-            <img src="./static/img/details-3.png" class="img-fluid" alt="">
-          </div>
-          <div class="col-md-7" data-aos="fade-up">
-            <h3>Sunt consequatur ad ut est nulla consectetur reiciendis animi voluptas</h3>
-            <p>Cupiditate placeat cupiditate placeat est ipsam culpa. Delectus quia minima quod. Sunt saepe odit aut quia voluptatem hic voluptas dolor doloremque.</p>
-            <ul>
-              <li><i class="bi bi-check"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-              <li><i class="bi bi-check"></i><span> Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-              <li><i class="bi bi-check"></i> <span>Facilis ut et voluptatem aperiam. Autem soluta ad fugiat</span>.</li>
-            </ul>
-          </div>
-        </div><!-- Features Item -->
-
-        <div class="row gy-4 align-items-center features-item">
-          <div class="col-md-5 order-1 order-md-2 d-flex align-items-center" data-aos="zoom-out">
-            <img src="./static/img/details-4.png" class="img-fluid" alt="">
-          </div>
-          <div class="col-md-7 order-2 order-md-1" data-aos="fade-up">
-            <h3>Quas et necessitatibus eaque impedit ipsum animi consequatur incidunt in</h3>
-            <p class="fst-italic">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-              magna aliqua.
-            </p>
-            <p>
-              Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-              velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-              culpa qui officia deserunt mollit anim id est laborum
-            </p>
-          </div>
-        </div><!-- Features Item -->
-
       </div>
 
     </section><!-- /Details Section -->
 
+    <section id="userproduct" class="stats section light-background">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Products</h2>
+        <div><span>This is our</span> <span class="description-title">Products List</span></div>
+      </div><!-- End Section Title -->
+      <div class="container">
+        <div class="row">
+        <?php 
+              foreach ($productlists['data'] as $product) {
+                echo '
+                  <div class="col-lg-3 col-md-3 mr-1 mt-3">
+                      <div class="card">
+                        <div class="card-title"><h3 class="text-center">'.$product['name'].'</h3></div>
+                        <div class="card-body">
+                          <img src="'.$product['image'].'" class="w-100">
+                          <h6>Amount:'.$product['amount'].'</h6>
+                          <h6>Price:'.$product['price'].'</h6>
+                        </div>
+                        <div class="card-footer">
+                          <input type="hidden" class="productprice" value="'.$product['price'].'">
+                          <input type="hidden" class="productid" value="'.$product['id'].'">
+                          '.($_SESSION['access_token'] !='' ? '<button class="btn btn-primary productbuy w-100">Buy</button>' : '<a href="./index.php?page=login" class="btn btn-primary w-100">Buy</a>').'
+                        </div>
+                      </div>
+                    </div>
+                ';
+              }
+            ?>
+        </div>
+      </div>
+
+    </section><!-- /Stats Section -->
     <!-- Gallery Section -->
     <section id="gallery" class="gallery section">
 
@@ -737,7 +690,7 @@
               <i class="bi bi-geo-alt flex-shrink-0"></i>
               <div>
                 <h3>Address</h3>
-                <p>A108 Adam Street, New York, NY 535022</p>
+                <p>Thazin Road, PinLon Township, Shan State, Myanmar</p>
               </div>
             </div><!-- End Info Item -->
 
@@ -745,7 +698,7 @@
               <i class="bi bi-telephone flex-shrink-0"></i>
               <div>
                 <h3>Call Us</h3>
-                <p>+1 5589 55488 55</p>
+                <p>+959776829759</p>
               </div>
             </div><!-- End Info Item -->
 
@@ -753,16 +706,14 @@
               <i class="bi bi-envelope flex-shrink-0"></i>
               <div>
                 <h3>Email Us</h3>
-                <p>info@example.com</p>
+                <p>khunlinnaing90@gmail.com</p>
               </div>
-            </div><!-- End Info Item -->
-
+            </div>
           </div>
 
           <div class="col-lg-8">
-            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+            <form action="./index.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
               <div class="row gy-4">
-
                 <div class="col-md-6">
                   <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
                 </div>
@@ -796,5 +747,5 @@
       </div>
 
     </section><!-- /Contact Section -->
-
+    
   </main>
